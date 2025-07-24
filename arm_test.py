@@ -65,7 +65,7 @@ time.sleep(2)
 # ======================
 print("Cambiando a modo STABILIZE...")
 master.set_mode(FLIGHT_MODE["STABILIZE"])  # Modo 0 = STABILIZE en ArduCopter
-time.sleep(4)
+time.sleep(5)
 
 # ======================
 # CAMBIAR A ALT_HOLD
