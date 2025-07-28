@@ -72,7 +72,7 @@ time.sleep(5)
 # ======================
 print("Cambiando a modo ALT_HOLD...")
 master.set_mode(FLIGHT_MODE["ALT_HOLD"])  # Modo 2 = ALT_HOLD en ArduCopter
-time.sleep(5)
+time.sleep(10)
 
 # ======================
 # DESARMAR DRON
