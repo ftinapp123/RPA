@@ -80,7 +80,7 @@ for i, (lat, lon, alt) in enumerate(WAYPOINTS):
     )
     master.mav.send(msg)
     ack = master.recv_match(type='MISSION_REQUEST', blocking=True)
-    print(f"Sent WP {i}, got request for seq {ack.seq}")
+    print(f"Sent WP {i+1}, got request for seq {ack.seq}")
 
 print("Mission uploaded!")
 
