@@ -5,7 +5,7 @@ import time
 #--------------------------
 # PARAMETERS
 #--------------------------
-TARGET_ALTITUDE = 20  # Takeoff altitude in meters
+TARGET_ALTITUDE = 10  # Takeoff altitude in meters
 
 # Replace these with real coordinates in SITL if needed
 WAYPOINTS = [
