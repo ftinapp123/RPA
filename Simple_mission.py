@@ -86,23 +86,38 @@ time.sleep(8)  # Wait a few seconds for takeoff
 
 mission_items = []
 
-# Dummy waypoint to start the mission at current location
+# Dummy WP0
 current_location = master.recv_match(type='GLOBAL_POSITION_INT', blocking=True)
 lat0 = current_location.lat / 1e7
 lon0 = current_location.lon / 1e7
 alt0 = current_location.relative_alt / 1000.0
+mission_items.append((lat0, lon0, alt0))  # WP0
 
-# WP0: Dummy start point
-mission_items.append((lat0, lon0, alt0))
-
-# Add real waypoints
+# Add the real waypoints
 mission_items.extend(WAYPOINTS)
 
-master.waypoint_clear_all_send()
-master.waypoint_count_send(len(mission_items))
+n_wp = len(mission_items)
+print(f"Sending {n_wp} waypoints...")
 
-for i, (lat, lon, alt) in enumerate(mission_items):
-    msg = mavlink2.MAVLink_mission_item_message(
+master.waypoint_clear_all_send()
+time.sleep(1)
+master.waypoint_count_send(n_wp)
+
+for i in range(n_wp):
+    # Wait for the MISSION_REQUEST for this sequence
+    while True:
+        msg = master.recv_match(type='MISSION_REQUEST', blocking=True, timeout=5)
+        if msg and msg.seq == i:
+            break
+        elif msg:
+            print(f"Skipping unexpected MISSION_REQUEST for seq {msg.seq}, expecting {i}")
+        else:
+            print("Timeout waiting for MISSION_REQUEST")
+            return  # Abort if no request comes
+
+    lat, lon, alt = mission_items[i]
+
+    master.mav.mission_item_send(
         target_system=master.target_system,
         target_component=master.target_component,
         seq=i,
@@ -116,9 +131,15 @@ for i, (lat, lon, alt) in enumerate(mission_items):
         z=alt,
         mission_type=0
     )
-    master.mav.send(msg)
-    ack = master.recv_match(type='MISSION_REQUEST', blocking=True)
-    print(f"Sent WP {i}, got request for seq {ack.seq}")
+    print(f"Sent WP {i}")
+
+# Wait for mission ack
+ack = master.recv_match(type='MISSION_ACK', blocking=True, timeout=5)
+if ack:
+    print("Mission upload complete")
+else:
+    print("No MISSION_ACK received")
+
 #--------------------------
 # 6. START MISSION
 #--------------------------
@@ -146,6 +167,8 @@ try:
             print(f"Lat: {lat}, Lon: {lon}, Alt: {alt:.1f} m")
 except KeyboardInterrupt:
     print("Stopped by user.")
+
+
 
 
 
