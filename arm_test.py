@@ -45,8 +45,11 @@ def arm_desarm(status):
 # ======================
 # CONEXIÓN
 # ======================
-print(f"Conectando a {serial_port} a {baud_rate} baudios...")
-master = mavutil.mavlink_connection(serial_port, baud=baud_rate)
+#print(f"Conectando a {serial_port} a {baud_rate} baudios...")
+#master = mavutil.mavlink_connection(serial_port, baud=baud_rate)
+#print(f"Conectando a {tcp-port) a puerto {port}")
+print("Connecting to UDP")
+master = mavutil.mavlink_connection("udpin:192.168.49.30:14550")
 
 print("Esperando HEARTBEAT...")
 master.wait_heartbeat()
