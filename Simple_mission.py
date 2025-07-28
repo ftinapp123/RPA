@@ -113,7 +113,7 @@ for i in range(n_wp):
             print(f"Skipping unexpected MISSION_REQUEST for seq {msg.seq}, expecting {i}")
         else:
             print("Timeout waiting for MISSION_REQUEST")
-            return  # Abort if no request comes
+            break
 
     lat, lon, alt = mission_items[i]
 
