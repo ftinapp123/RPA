@@ -58,12 +58,50 @@ time.sleep(8)  # Wait a few seconds for takeoff
 #--------------------------
 # 5. UPLOAD MISSION
 #--------------------------
-print("Uploading mission...")
+# print("Uploading mission...")
+#
+# master.waypoint_clear_all_send()
+# master.waypoint_count_send(len(WAYPOINTS))
+#
+# for i, (lat, lon, alt) in enumerate(WAYPOINTS):
+#     msg = mavlink2.MAVLink_mission_item_message(
+#         target_system=master.target_system,
+#         target_component=master.target_component,
+#         seq=i,
+#         frame=mavlink2.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+#         command=mavlink2.MAV_CMD_NAV_WAYPOINT,
+#         current=1 if i == 0 else 0,
+#         autocontinue=1,
+#         param1=0, param2=0, param3=0, param4=0,
+#         x=lat,
+#         y=lon,
+#         z=alt,
+#         mission_type=0
+#     )
+#     master.mav.send(msg)
+#     ack = master.recv_match(type='MISSION_REQUEST', blocking=True)
+#     print(f"Sent WP {i+1}, got request for seq {ack.seq}")
+#
+# print("Mission uploaded!")
+
+mission_items = []
+
+# Dummy waypoint to start the mission at current location
+current_location = master.recv_match(type='GLOBAL_POSITION_INT', blocking=True)
+lat0 = current_location.lat / 1e7
+lon0 = current_location.lon / 1e7
+alt0 = current_location.relative_alt / 1000.0
+
+# WP0: Dummy start point
+mission_items.append((lat0, lon0, alt0))
+
+# Add real waypoints
+mission_items.extend(WAYPOINTS)
 
 master.waypoint_clear_all_send()
-master.waypoint_count_send(len(WAYPOINTS))
+master.waypoint_count_send(len(mission_items))
 
-for i, (lat, lon, alt) in enumerate(WAYPOINTS):
+for i, (lat, lon, alt) in enumerate(mission_items):
     msg = mavlink2.MAVLink_mission_item_message(
         target_system=master.target_system,
         target_component=master.target_component,
@@ -80,10 +118,7 @@ for i, (lat, lon, alt) in enumerate(WAYPOINTS):
     )
     master.mav.send(msg)
     ack = master.recv_match(type='MISSION_REQUEST', blocking=True)
-    print(f"Sent WP {i+1}, got request for seq {ack.seq}")
-
-print("Mission uploaded!")
-
+    print(f"Sent WP {i}, got request for seq {ack.seq}")
 #--------------------------
 # 6. START MISSION
 #--------------------------
@@ -111,3 +146,7 @@ try:
             print(f"Lat: {lat}, Lon: {lon}, Alt: {alt:.1f} m")
 except KeyboardInterrupt:
     print("Stopped by user.")
+
+
+
+
