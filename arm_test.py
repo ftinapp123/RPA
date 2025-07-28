@@ -49,7 +49,7 @@ def arm_desarm(status):
 #master = mavutil.mavlink_connection(serial_port, baud=baud_rate)
 #print(f"Conectando a {tcp-port) a puerto {port}")
 print("Connecting to UDP")
-master = mavutil.mavlink_connection("udpin:192.168.49.30:14550")
+master = mavutil.mavlink_connection("udpout:192.168.49.30:14551")
 
 print("Esperando HEARTBEAT...")
 master.wait_heartbeat()
@@ -75,7 +75,7 @@ time.sleep(5)
 # ======================
 print("Cambiando a modo ALT_HOLD...")
 master.set_mode(FLIGHT_MODE["ALT_HOLD"])  # Modo 2 = ALT_HOLD en ArduCopter
-time.sleep(2)
+time.sleep(5)
 
 # ======================
 # DESARMAR DRON
