@@ -37,7 +37,7 @@ import os
 import json
 
 # Configuración de logging
-log_file = '/home/pi/camera_trigger.log'
+log_file = '/home/frank/camera_trigger.log'
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
